@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mundial 2026 — Fixture & Predicciones</title>
+  <link rel="stylesheet" href="css/custom.css">
+</head>
+<body>
+
+  <!-- ── Header ── -->
+  <header>
+    <div>
+      <h1>⚽ MUNDIAL 2026</h1>
+      <p>Fixture · Tablas · Predicciones</p>
+    </div>
+    <div class="hd-right">
+      <span>HOY</span>
+      <strong id="today-date"></strong>
+    </div>
+  </header>
+
+  <!-- ── Navigation ── -->
+  <nav>
+    <button class="nav-tab active" data-view="groups">🏆 Grupos</button>
+    <button class="nav-tab"        data-view="fixture">📅 Fixture</button>
+    <button class="nav-tab"        data-view="predictions">🎯 Predicciones</button>
+    <button class="nav-tab"        data-view="admin">⚙️ Admin</button>
+  </nav>
+
+  <!-- ── Main ── -->
+  <main>
+    <div id="view-groups"></div>
+    <div id="view-fixture"      class="hidden"></div>
+    <div id="view-predictions"  class="hidden"></div>
+    <div id="view-admin"        class="hidden"></div>
+  </main>
+
+  <!-- ── Toast ── -->
+  <div id="toast" class="toast"></div>
+
+  <!-- ── Scripts (order matters: data → logic → ui → app) ── -->
+  <script src="js/data.js"></script>
+  <script src="js/standings.js"></script>
+  <script src="js/predictions.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
