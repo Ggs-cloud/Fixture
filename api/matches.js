@@ -1,15 +1,30 @@
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET');
-  res.setHeader('Cache-Control', 's-maxage=30, stale-while-revalidate');
+  res.setHeader('Cache-Control', 'no-store');
+
+  const key = process.env.API_FOOTBALL_KEY;
+  if (!key) {
+    return res.status(500).json({ error: 'API_FOOTBALL_KEY no configurada en Vercel' });
+  }
 
   try {
-    const r = await fetch('https://api.football-data.org/v4/competitions/WC/matches', {
-      headers: { 'X-Auth-Token': process.env.API_FOOTBALL_KEY }
-    });
+    const r = await fetch(
+      'https://api.football-data.org/v4/competitions/WC/matches?season=2026',
+      { headers: { 'X-Auth-Token': key } }
+    );
     const data = await r.json();
-    res.status(r.status).json(data);
+
+    if (!r.ok) {
+      return res.status(r.status).json({
+        error: 'Football-Data.org rechazó la petición',
+        status: r.status,
+        detail: data
+      });
+    }
+
+    res.status(200).json(data);
   } catch (e) {
-    res.status(500).json({ error: 'proxy error' });
+    res.status(500).json({ error: 'proxy error', detail: e.message });
   }
 };

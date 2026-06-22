@@ -86,18 +86,36 @@ const ApiStore = {
   async refresh() {
     try {
       const res = await fetch('/api/matches');
-      if (!res.ok) return false;
       const data = await res.json();
-      if (!Array.isArray(data.matches)) return false;
+
+      if (!res.ok) {
+        console.error('[API] Error del servidor:', data);
+        return false;
+      }
+
+      if (!Array.isArray(data.matches)) {
+        console.error('[API] Respuesta inesperada (sin array matches):', data);
+        return false;
+      }
+
+      console.log(`[API] ${data.matches.length} partidos recibidos`);
 
       this.cache = {};
+      let mapeados = 0;
       data.matches.forEach(m => {
         const homeKey = TEAM_NAME_MAP[m.homeTeam.name] || TEAM_NAME_MAP[m.homeTeam.shortName];
         const awayKey = TEAM_NAME_MAP[m.awayTeam.name] || TEAM_NAME_MAP[m.awayTeam.shortName];
-        if (!homeKey || !awayKey) return;
+
+        if (!homeKey || !awayKey) {
+          console.warn(`[API] Sin mapeo: "${m.homeTeam.name}" vs "${m.awayTeam.name}"`);
+          return;
+        }
 
         const local = INITIAL_MATCHES.find(l => l.home === homeKey && l.away === awayKey);
-        if (!local) return;
+        if (!local) {
+          console.warn(`[API] Partido no encontrado en fixture local: ${homeKey} vs ${awayKey}`);
+          return;
+        }
 
         const status = STATUS_MAP[m.status] || 'scheduled';
         const ft = m.score?.fullTime;
@@ -106,12 +124,14 @@ const ApiStore = {
           : null;
 
         this.cache[local.id] = { status, real_score };
+        mapeados++;
       });
 
+      console.log(`[API] ${mapeados}/${data.matches.length} partidos mapeados correctamente`);
       this.lastFetch = Date.now();
       return true;
     } catch (e) {
-      console.warn('[API] fetch fallido, usando datos estáticos');
+      console.error('[API] fetch fallido:', e.message);
       return false;
     }
   },
