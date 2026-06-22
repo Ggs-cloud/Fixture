@@ -202,14 +202,11 @@ const DataStore = {
   },
 
   getAllMatches() {
-    const ov       = this.getResultOverrides();
-    const apiCache = (typeof ApiStore !== 'undefined') ? ApiStore.cache : {};
-    return INITIAL_MATCHES.map(m => {
-      const apiData   = apiCache[m.id]  || {};
-      const adminData = ov[m.id]        || {};
-      // prioridad: override manual > API > datos estáticos
-      return { ...m, ...apiData, ...adminData };
-    });
+    const ov   = this.getResultOverrides();
+    const base = (typeof ApiStore !== 'undefined' && ApiStore.matches.length > 0)
+      ? ApiStore.matches  // calendario real (fechas, emparejamientos y resultados de la API)
+      : INITIAL_MATCHES;  // respaldo mientras la API no responde
+    return base.map(m => ov[m.id] ? { ...m, ...ov[m.id] } : m);
   },
 
   getMatchesByGroup(groupId) {

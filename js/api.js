@@ -79,8 +79,36 @@ const STATUS_MAP = {
   'CANCELLED': 'scheduled',
 };
 
+function mapApiMatch(m) {
+  const homeKey = TEAM_NAME_MAP[m.homeTeam.name] || TEAM_NAME_MAP[m.homeTeam.shortName];
+  const awayKey = TEAM_NAME_MAP[m.awayTeam.name] || TEAM_NAME_MAP[m.awayTeam.shortName];
+  if (!homeKey || !awayKey || !m.group) {
+    console.warn(`[API] Sin mapeo: "${m.homeTeam.name}" vs "${m.awayTeam.name}"`);
+    return null;
+  }
+
+  const status = STATUS_MAP[m.status] || 'scheduled';
+  const ft = m.score?.fullTime;
+  const real_score = (status === 'finished' || status === 'live') && ft?.home != null
+    ? { home: ft.home, away: ft.away }
+    : null;
+
+  const d = new Date(m.utcDate);
+  const date = d.toLocaleDateString('en-CA');                                  // YYYY-MM-DD en horario local
+  const time = d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false });
+
+  return {
+    id: 'API_' + m.id,
+    group: m.group.replace('GROUP_', ''),
+    matchday: m.matchday,
+    home: homeKey,
+    away: awayKey,
+    date, time, status, real_score,
+  };
+}
+
 const ApiStore = {
-  cache: {},
+  matches: [],
   lastFetch: null,
 
   async refresh() {
@@ -98,36 +126,14 @@ const ApiStore = {
         return false;
       }
 
-      console.log(`[API] ${data.matches.length} partidos recibidos`);
+      const mapped = data.matches
+        .filter(m => m.stage === 'GROUP_STAGE')
+        .map(mapApiMatch)
+        .filter(Boolean);
 
-      this.cache = {};
-      let mapeados = 0;
-      data.matches.forEach(m => {
-        const homeKey = TEAM_NAME_MAP[m.homeTeam.name] || TEAM_NAME_MAP[m.homeTeam.shortName];
-        const awayKey = TEAM_NAME_MAP[m.awayTeam.name] || TEAM_NAME_MAP[m.awayTeam.shortName];
+      console.log(`[API] ${mapped.length}/${data.matches.length} partidos de fase de grupos mapeados`);
 
-        if (!homeKey || !awayKey) {
-          console.warn(`[API] Sin mapeo: "${m.homeTeam.name}" vs "${m.awayTeam.name}"`);
-          return;
-        }
-
-        const local = INITIAL_MATCHES.find(l => l.home === homeKey && l.away === awayKey);
-        if (!local) {
-          console.warn(`[API] Partido no encontrado en fixture local: ${homeKey} vs ${awayKey}`);
-          return;
-        }
-
-        const status = STATUS_MAP[m.status] || 'scheduled';
-        const ft = m.score?.fullTime;
-        const real_score = (status === 'finished' || status === 'live') && ft?.home != null
-          ? { home: ft.home, away: ft.away }
-          : null;
-
-        this.cache[local.id] = { status, real_score };
-        mapeados++;
-      });
-
-      console.log(`[API] ${mapeados}/${data.matches.length} partidos mapeados correctamente`);
+      if (mapped.length > 0) this.matches = mapped;
       this.lastFetch = Date.now();
       return true;
     } catch (e) {
@@ -137,6 +143,6 @@ const ApiStore = {
   },
 
   hasLiveMatches() {
-    return Object.values(this.cache).some(m => m.status === 'live');
+    return this.matches.some(m => m.status === 'live');
   },
 };

@@ -392,8 +392,9 @@ function renderOverridesLog() {
     log.innerHTML = '<p style="color:#64748b;font-size:.85rem">Ninguno todavía.</p>';
     return;
   }
+  const allMatches = DataStore.getAllMatches();
   log.innerHTML = ids.map(id => {
-    const m = INITIAL_MATCHES.find(x => x.id === id);
+    const m = allMatches.find(x => x.id === id);
     if (!m) return '';
     const o = ov[id];
     return `<div class="override-row">
