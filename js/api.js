@@ -2,6 +2,23 @@
 // API CLIENT — Football-Data.org via proxy
 // =============================================
 
+// IDs estables de Football-Data.org (no cambian aunque el nombre varíe de ortografía)
+const TEAM_ID_MAP = {
+  769: 'mexico', 772: 'south_korea', 774: 'south_africa', 798: 'czech_republic',
+  828: 'canada', 788: 'switzerland', 8030: 'qatar', 1060: 'bosnia',
+  764: 'brazil', 815: 'morocco', 8873: 'scotland', 836: 'haiti',
+  771: 'usa', 779: 'australia', 761: 'paraguay', 803: 'turkey',
+  759: 'germany', 791: 'ecuador', 1935: 'ivory_coast', 9460: 'curacao',
+  8601: 'netherlands', 766: 'japan', 792: 'sweden', 802: 'tunisia',
+  805: 'belgium', 840: 'iran', 825: 'egypt', 783: 'new_zealand',
+  760: 'spain', 758: 'uruguay', 801: 'saudi_arabia', 1930: 'cape_verde',
+  773: 'france', 804: 'senegal', 8872: 'norway', 8062: 'iraq',
+  762: 'argentina', 816: 'austria', 778: 'algeria', 8049: 'jordan',
+  765: 'portugal', 818: 'colombia', 8070: 'uzbekistan', 1934: 'dr_congo',
+  770: 'england', 799: 'croatia', 1836: 'panama', 763: 'ghana',
+};
+
+// Respaldo por nombre, en caso de que algún equipo no esté en TEAM_ID_MAP
 const TEAM_NAME_MAP = {
   // Grupo A
   'Mexico': 'mexico',
@@ -80,8 +97,8 @@ const STATUS_MAP = {
 };
 
 function mapApiMatch(m) {
-  const homeKey = TEAM_NAME_MAP[m.homeTeam.name] || TEAM_NAME_MAP[m.homeTeam.shortName];
-  const awayKey = TEAM_NAME_MAP[m.awayTeam.name] || TEAM_NAME_MAP[m.awayTeam.shortName];
+  const homeKey = TEAM_ID_MAP[m.homeTeam.id] || TEAM_NAME_MAP[m.homeTeam.name] || TEAM_NAME_MAP[m.homeTeam.shortName];
+  const awayKey = TEAM_ID_MAP[m.awayTeam.id] || TEAM_NAME_MAP[m.awayTeam.name] || TEAM_NAME_MAP[m.awayTeam.shortName];
   if (!homeKey || !awayKey || !m.group) {
     console.warn(`[API] Sin mapeo: "${m.homeTeam.name}" vs "${m.awayTeam.name}"`);
     return null;
