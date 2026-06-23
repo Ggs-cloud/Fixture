@@ -208,7 +208,27 @@ const DataStore = {
     const base = (typeof ApiStore !== 'undefined' && ApiStore.matches.length > 0)
       ? ApiStore.matches  // calendario real (fechas, emparejamientos y resultados de la API)
       : INITIAL_MATCHES;  // respaldo mientras la API no responde
-    return base.map(m => ov[m.id] ? { ...m, ...ov[m.id] } : m);
+    return base.map(m => {
+      const o = ov[m.id];
+      // si la API ya confirmó el resultado final, ese dato manda sobre el override manual
+      if (!o || (m.status === 'finished' && m.real_score)) return m;
+      return { ...m, ...o };
+    });
+  },
+
+  // Limpia overrides manuales que ya quedaron confirmados por la API,
+  // para que el panel de Admin no muestre correcciones que ya no se usan.
+  pruneStaleOverrides() {
+    if (typeof ApiStore === 'undefined') return;
+    const ov = this.getResultOverrides();
+    let changed = false;
+    ApiStore.matches.forEach(m => {
+      if (ov[m.id] && m.status === 'finished' && m.real_score) {
+        delete ov[m.id];
+        changed = true;
+      }
+    });
+    if (changed) localStorage.setItem(LS_RESULTS, JSON.stringify(ov));
   },
 
   getMatchesByGroup(groupId) {

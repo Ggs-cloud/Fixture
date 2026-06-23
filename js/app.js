@@ -5,6 +5,7 @@
 const App = {
   currentView:        'groups',
   currentGroupFilter: 'all',
+  pollTimer:          null,
 
   init() {
     document.getElementById('today-date').textContent =
@@ -18,24 +19,41 @@ const App = {
       });
     });
 
+    document.addEventListener('visibilitychange', () => this.handleVisibilityChange());
+
     this.showView('groups');
     this.initApi();
+  },
+
+  // Si la pestaña queda oculta, dejamos de consultar la API (ahorra cuota).
+  // Al volver a estar visible, refrescamos al toque y retomamos el ciclo.
+  handleVisibilityChange() {
+    if (typeof ApiStore === 'undefined') return;
+    clearTimeout(this.pollTimer);
+    if (document.visibilityState === 'visible') this.initApi();
   },
 
   async initApi() {
     if (typeof ApiStore === 'undefined') return;
     const ok = await ApiStore.refresh();
-    if (ok) this.refresh();
+    if (ok) {
+      DataStore.pruneStaleOverrides();
+      this.refresh();
+    }
     this.scheduleNextFetch();
   },
 
   scheduleNextFetch() {
     if (typeof ApiStore === 'undefined') return;
+    if (document.visibilityState !== 'visible') return; // no programar mientras está oculta
     // 60 seg si hay partidos en vivo, 5 min si no
     const delay = ApiStore.hasLiveMatches() ? 60_000 : 300_000;
-    setTimeout(async () => {
+    this.pollTimer = setTimeout(async () => {
       const ok = await ApiStore.refresh();
-      if (ok) this.refresh();
+      if (ok) {
+        DataStore.pruneStaleOverrides();
+        this.refresh();
+      }
       this.scheduleNextFetch();
     }, delay);
   },
