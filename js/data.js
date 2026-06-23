@@ -67,7 +67,9 @@ const TEAMS = {
   ghana:          { name: 'Ghana',                flag: '🇬🇭', group: 'L' },
 };
 
-// All 72 group-stage matches
+// Respaldo offline — solo se usa si la API no responde.
+// Todos los estados quedan en 'scheduled' a propósito: el estado real
+// (en vivo / finalizado / marcador) siempre viene de ApiStore.
 // MD pairing per group: MD1=1v2,3v4 | MD2=1v3,2v4 | MD3=1v4,2v3
 // Group order: A=mexico,south_korea,south_africa,czech_republic
 //              B=canada,switzerland,qatar,bosnia
@@ -83,79 +85,79 @@ const TEAMS = {
 //              L=england,croatia,panama,ghana
 const INITIAL_MATCHES = [
   // ───── GRUPO A ─────
-  { id:'GRP_A_MD1_1', group:'A', matchday:1, home:'mexico',         away:'south_korea',    date:'2026-06-11', time:'13:00', status:'finished',  real_score:{home:2,away:0} },
-  { id:'GRP_A_MD1_2', group:'A', matchday:1, home:'south_africa',   away:'czech_republic', date:'2026-06-11', time:'16:00', status:'finished',  real_score:{home:2,away:1} },
+  { id:'GRP_A_MD1_1', group:'A', matchday:1, home:'mexico',         away:'south_korea',    date:'2026-06-11', time:'13:00', status:'scheduled',  real_score:null },
+  { id:'GRP_A_MD1_2', group:'A', matchday:1, home:'south_africa',   away:'czech_republic', date:'2026-06-11', time:'16:00', status:'scheduled',  real_score:null },
   { id:'GRP_A_MD2_1', group:'A', matchday:2, home:'mexico',         away:'south_africa',   date:'2026-06-19', time:'13:00', status:'scheduled', real_score:null },
   { id:'GRP_A_MD2_2', group:'A', matchday:2, home:'south_korea',    away:'czech_republic', date:'2026-06-19', time:'16:00', status:'scheduled', real_score:null },
   { id:'GRP_A_MD3_1', group:'A', matchday:3, home:'mexico',         away:'czech_republic', date:'2026-06-23', time:'18:00', status:'scheduled', real_score:null },
   { id:'GRP_A_MD3_2', group:'A', matchday:3, home:'south_korea',    away:'south_africa',   date:'2026-06-23', time:'18:00', status:'scheduled', real_score:null },
 
   // ───── GRUPO B ─────
-  { id:'GRP_B_MD1_1', group:'B', matchday:1, home:'canada',         away:'switzerland',    date:'2026-06-11', time:'19:00', status:'finished',  real_score:{home:1,away:1} },
-  { id:'GRP_B_MD1_2', group:'B', matchday:1, home:'qatar',          away:'bosnia',         date:'2026-06-12', time:'10:00', status:'finished',  real_score:{home:1,away:1} },
+  { id:'GRP_B_MD1_1', group:'B', matchday:1, home:'canada',         away:'switzerland',    date:'2026-06-11', time:'19:00', status:'scheduled',  real_score:null },
+  { id:'GRP_B_MD1_2', group:'B', matchday:1, home:'qatar',          away:'bosnia',         date:'2026-06-12', time:'10:00', status:'scheduled',  real_score:null },
   { id:'GRP_B_MD2_1', group:'B', matchday:2, home:'canada',         away:'qatar',          date:'2026-06-19', time:'19:00', status:'scheduled', real_score:null },
   { id:'GRP_B_MD2_2', group:'B', matchday:2, home:'switzerland',    away:'bosnia',         date:'2026-06-20', time:'10:00', status:'scheduled', real_score:null },
   { id:'GRP_B_MD3_1', group:'B', matchday:3, home:'canada',         away:'bosnia',         date:'2026-06-24', time:'18:00', status:'scheduled', real_score:null },
   { id:'GRP_B_MD3_2', group:'B', matchday:3, home:'switzerland',    away:'qatar',          date:'2026-06-24', time:'18:00', status:'scheduled', real_score:null },
 
   // ───── GRUPO C ─────
-  { id:'GRP_C_MD1_1', group:'C', matchday:1, home:'brazil',         away:'morocco',        date:'2026-06-12', time:'13:00', status:'finished',  real_score:{home:1,away:1} },
-  { id:'GRP_C_MD1_2', group:'C', matchday:1, home:'scotland',       away:'haiti',          date:'2026-06-12', time:'16:00', status:'finished',  real_score:{home:1,away:0} },
+  { id:'GRP_C_MD1_1', group:'C', matchday:1, home:'brazil',         away:'morocco',        date:'2026-06-12', time:'13:00', status:'scheduled',  real_score:null },
+  { id:'GRP_C_MD1_2', group:'C', matchday:1, home:'scotland',       away:'haiti',          date:'2026-06-12', time:'16:00', status:'scheduled',  real_score:null },
   { id:'GRP_C_MD2_1', group:'C', matchday:2, home:'brazil',         away:'scotland',       date:'2026-06-20', time:'13:00', status:'scheduled', real_score:null },
   { id:'GRP_C_MD2_2', group:'C', matchday:2, home:'morocco',        away:'haiti',          date:'2026-06-20', time:'16:00', status:'scheduled', real_score:null },
   { id:'GRP_C_MD3_1', group:'C', matchday:3, home:'brazil',         away:'haiti',          date:'2026-06-24', time:'22:00', status:'scheduled', real_score:null },
   { id:'GRP_C_MD3_2', group:'C', matchday:3, home:'morocco',        away:'scotland',       date:'2026-06-24', time:'22:00', status:'scheduled', real_score:null },
 
   // ───── GRUPO D ─────
-  { id:'GRP_D_MD1_1', group:'D', matchday:1, home:'usa',            away:'australia',      date:'2026-06-12', time:'19:00', status:'finished',  real_score:{home:4,away:1} },
-  { id:'GRP_D_MD1_2', group:'D', matchday:1, home:'paraguay',       away:'turkey',         date:'2026-06-13', time:'10:00', status:'finished',  real_score:{home:2,away:0} },
+  { id:'GRP_D_MD1_1', group:'D', matchday:1, home:'usa',            away:'australia',      date:'2026-06-12', time:'19:00', status:'scheduled',  real_score:null },
+  { id:'GRP_D_MD1_2', group:'D', matchday:1, home:'paraguay',       away:'turkey',         date:'2026-06-13', time:'10:00', status:'scheduled',  real_score:null },
   { id:'GRP_D_MD2_1', group:'D', matchday:2, home:'usa',            away:'paraguay',       date:'2026-06-20', time:'19:00', status:'scheduled', real_score:null },
   { id:'GRP_D_MD2_2', group:'D', matchday:2, home:'australia',      away:'turkey',         date:'2026-06-21', time:'10:00', status:'scheduled', real_score:null },
   { id:'GRP_D_MD3_1', group:'D', matchday:3, home:'usa',            away:'turkey',         date:'2026-06-25', time:'18:00', status:'scheduled', real_score:null },
   { id:'GRP_D_MD3_2', group:'D', matchday:3, home:'australia',      away:'paraguay',       date:'2026-06-25', time:'18:00', status:'scheduled', real_score:null },
 
   // ───── GRUPO E ─────
-  { id:'GRP_E_MD1_1', group:'E', matchday:1, home:'germany',        away:'ecuador',        date:'2026-06-13', time:'13:00', status:'finished',  real_score:{home:7,away:1} },
-  { id:'GRP_E_MD1_2', group:'E', matchday:1, home:'ivory_coast',    away:'curacao',        date:'2026-06-13', time:'16:00', status:'finished',  real_score:{home:1,away:0} },
+  { id:'GRP_E_MD1_1', group:'E', matchday:1, home:'germany',        away:'ecuador',        date:'2026-06-13', time:'13:00', status:'scheduled',  real_score:null },
+  { id:'GRP_E_MD1_2', group:'E', matchday:1, home:'ivory_coast',    away:'curacao',        date:'2026-06-13', time:'16:00', status:'scheduled',  real_score:null },
   { id:'GRP_E_MD2_1', group:'E', matchday:2, home:'germany',        away:'ivory_coast',    date:'2026-06-21', time:'13:00', status:'scheduled', real_score:null },
   { id:'GRP_E_MD2_2', group:'E', matchday:2, home:'ecuador',        away:'curacao',        date:'2026-06-21', time:'16:00', status:'scheduled', real_score:null },
   { id:'GRP_E_MD3_1', group:'E', matchday:3, home:'germany',        away:'curacao',        date:'2026-06-25', time:'22:00', status:'scheduled', real_score:null },
   { id:'GRP_E_MD3_2', group:'E', matchday:3, home:'ivory_coast',    away:'ecuador',        date:'2026-06-25', time:'22:00', status:'scheduled', real_score:null },
 
   // ───── GRUPO F ─────
-  { id:'GRP_F_MD1_1', group:'F', matchday:1, home:'netherlands',    away:'japan',          date:'2026-06-13', time:'19:00', status:'finished',  real_score:{home:2,away:2} },
-  { id:'GRP_F_MD1_2', group:'F', matchday:1, home:'sweden',         away:'tunisia',        date:'2026-06-14', time:'10:00', status:'finished',  real_score:{home:5,away:1} },
+  { id:'GRP_F_MD1_1', group:'F', matchday:1, home:'netherlands',    away:'japan',          date:'2026-06-13', time:'19:00', status:'scheduled',  real_score:null },
+  { id:'GRP_F_MD1_2', group:'F', matchday:1, home:'sweden',         away:'tunisia',        date:'2026-06-14', time:'10:00', status:'scheduled',  real_score:null },
   { id:'GRP_F_MD2_1', group:'F', matchday:2, home:'netherlands',    away:'sweden',         date:'2026-06-21', time:'19:00', status:'scheduled', real_score:null },
   { id:'GRP_F_MD2_2', group:'F', matchday:2, home:'japan',          away:'tunisia',        date:'2026-06-22', time:'10:00', status:'scheduled', real_score:null },
   { id:'GRP_F_MD3_1', group:'F', matchday:3, home:'netherlands',    away:'tunisia',        date:'2026-06-26', time:'18:00', status:'scheduled', real_score:null },
   { id:'GRP_F_MD3_2', group:'F', matchday:3, home:'japan',          away:'sweden',         date:'2026-06-26', time:'18:00', status:'scheduled', real_score:null },
 
   // ───── GRUPO G ─────
-  { id:'GRP_G_MD1_1', group:'G', matchday:1, home:'belgium',        away:'iran',           date:'2026-06-14', time:'13:00', status:'finished',  real_score:{home:1,away:1} },
-  { id:'GRP_G_MD1_2', group:'G', matchday:1, home:'egypt',          away:'new_zealand',    date:'2026-06-14', time:'16:00', status:'finished',  real_score:{home:2,away:2} },
+  { id:'GRP_G_MD1_1', group:'G', matchday:1, home:'belgium',        away:'iran',           date:'2026-06-14', time:'13:00', status:'scheduled',  real_score:null },
+  { id:'GRP_G_MD1_2', group:'G', matchday:1, home:'egypt',          away:'new_zealand',    date:'2026-06-14', time:'16:00', status:'scheduled',  real_score:null },
   { id:'GRP_G_MD2_1', group:'G', matchday:2, home:'belgium',        away:'egypt',          date:'2026-06-22', time:'13:00', status:'scheduled', real_score:null },
   { id:'GRP_G_MD2_2', group:'G', matchday:2, home:'iran',           away:'new_zealand',    date:'2026-06-22', time:'16:00', status:'scheduled', real_score:null },
   { id:'GRP_G_MD3_1', group:'G', matchday:3, home:'belgium',        away:'new_zealand',    date:'2026-06-26', time:'22:00', status:'scheduled', real_score:null },
   { id:'GRP_G_MD3_2', group:'G', matchday:3, home:'iran',           away:'egypt',          date:'2026-06-26', time:'22:00', status:'scheduled', real_score:null },
 
   // ───── GRUPO H ─────
-  { id:'GRP_H_MD1_1', group:'H', matchday:1, home:'spain',          away:'uruguay',        date:'2026-06-14', time:'19:00', status:'finished',  real_score:{home:0,away:0} },
-  { id:'GRP_H_MD1_2', group:'H', matchday:1, home:'saudi_arabia',   away:'cape_verde',     date:'2026-06-15', time:'10:00', status:'finished',  real_score:{home:1,away:1} },
+  { id:'GRP_H_MD1_1', group:'H', matchday:1, home:'spain',          away:'uruguay',        date:'2026-06-14', time:'19:00', status:'scheduled',  real_score:null },
+  { id:'GRP_H_MD1_2', group:'H', matchday:1, home:'saudi_arabia',   away:'cape_verde',     date:'2026-06-15', time:'10:00', status:'scheduled',  real_score:null },
   { id:'GRP_H_MD2_1', group:'H', matchday:2, home:'spain',          away:'saudi_arabia',   date:'2026-06-22', time:'19:00', status:'scheduled', real_score:null },
   { id:'GRP_H_MD2_2', group:'H', matchday:2, home:'uruguay',        away:'cape_verde',     date:'2026-06-23', time:'10:00', status:'scheduled', real_score:null },
   { id:'GRP_H_MD3_1', group:'H', matchday:3, home:'spain',          away:'cape_verde',     date:'2026-06-27', time:'18:00', status:'scheduled', real_score:null },
   { id:'GRP_H_MD3_2', group:'H', matchday:3, home:'uruguay',        away:'saudi_arabia',   date:'2026-06-27', time:'18:00', status:'scheduled', real_score:null },
 
-  // ───── GRUPO I ───── (EN VIVO HOY 16 Jun)
-  { id:'GRP_I_MD1_1', group:'I', matchday:1, home:'france',         away:'senegal',        date:'2026-06-16', time:'13:00', status:'live',      real_score:null },
-  { id:'GRP_I_MD1_2', group:'I', matchday:1, home:'norway',         away:'iraq',           date:'2026-06-16', time:'16:00', status:'live',      real_score:null },
+  // ───── GRUPO I ─────
+  { id:'GRP_I_MD1_1', group:'I', matchday:1, home:'france',         away:'senegal',        date:'2026-06-16', time:'13:00', status:'scheduled',      real_score:null },
+  { id:'GRP_I_MD1_2', group:'I', matchday:1, home:'norway',         away:'iraq',           date:'2026-06-16', time:'16:00', status:'scheduled',      real_score:null },
   { id:'GRP_I_MD2_1', group:'I', matchday:2, home:'france',         away:'norway',         date:'2026-06-23', time:'13:00', status:'scheduled', real_score:null },
   { id:'GRP_I_MD2_2', group:'I', matchday:2, home:'senegal',        away:'iraq',           date:'2026-06-23', time:'16:00', status:'scheduled', real_score:null },
   { id:'GRP_I_MD3_1', group:'I', matchday:3, home:'france',         away:'iraq',           date:'2026-06-27', time:'22:00', status:'scheduled', real_score:null },
   { id:'GRP_I_MD3_2', group:'I', matchday:3, home:'senegal',        away:'norway',         date:'2026-06-27', time:'22:00', status:'scheduled', real_score:null },
 
-  // ───── GRUPO J ───── (HOY 16 Jun)
-  { id:'GRP_J_MD1_1', group:'J', matchday:1, home:'argentina',      away:'austria',        date:'2026-06-16', time:'19:00', status:'live',      real_score:null },
+  // ───── GRUPO J ─────
+  { id:'GRP_J_MD1_1', group:'J', matchday:1, home:'argentina',      away:'austria',        date:'2026-06-16', time:'19:00', status:'scheduled',      real_score:null },
   { id:'GRP_J_MD1_2', group:'J', matchday:1, home:'algeria',        away:'jordan',         date:'2026-06-16', time:'22:00', status:'scheduled', real_score:null },
   { id:'GRP_J_MD2_1', group:'J', matchday:2, home:'argentina',      away:'algeria',        date:'2026-06-24', time:'13:00', status:'scheduled', real_score:null },
   { id:'GRP_J_MD2_2', group:'J', matchday:2, home:'austria',        away:'jordan',         date:'2026-06-24', time:'16:00', status:'scheduled', real_score:null },
